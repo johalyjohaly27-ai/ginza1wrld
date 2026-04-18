@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GINZA WRLD - Secure Checkout Update</title>
+
+</head>
+<body>
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Space+Grotesk:wght@300;500;700&family=Orbitron:wght@400;900&display=swap');
+
+    :root {
+        --primary-black: #000000;
+        --pure-white: #ffffff;
+        --border-gray: #222222;
+        --accent-gray: rgba(17, 17, 17, 0.9);
+        --font-logo: 'Syncopate', sans-serif;
+        --font-header: 'Orbitron', sans-serif;
+        --font-main: 'Space Grotesk', sans-serif;
+    }
+
+    body {
+        font-family: var(--font-main);
+        margin: 0; padding: 0;
+        background-color: var(--primary-black);
+        color: var(--pure-white);
+        overflow-x: hidden;
+        min-height: 100vh;
+    }
+
+    #star-container {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        z-index: -1; background: black; overflow: hidden;
+    }
+
+    .star {
+        position: absolute; background: white; border-radius: 50%;
+        opacity: 0; animation: twinkle var(--duration) infinite ease-in-out;
+    }
+
+    @keyframes twinkle {
+        0%, 100% { opacity: 0.2; transform: scale(1); }
+        50% { opacity: 0.7; transform: scale(1.1); }
+    }
+
+    header {
+        padding: 30px 20px; border-bottom: 1px solid var(--border-gray);
+        position: sticky; top: 0; background: rgba(0, 0, 0, 0.95);
+        backdrop-filter: blur(20px); z-index: 100; display: flex; justify-content: center;
+    }
+
+    .header-content {
+        width: 100%; max-width: 1200px; display: flex;
+        justify-content: space-between; align-items: center;
+    }
+
+    .logo { font-family: var(--font-logo); font-size: 24px; letter-spacing: 12px; cursor: pointer; }
+
+    .view-container {
+        display: none; padding: 60px 20px; max-width: 1200px;
+        margin: 0 auto; animation: fadeIn 0.5s ease;
+    }
+
+    #homeView { display: block; }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .box-grid, .submenu-grid, .options-grid {
+        display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;
+    }
+    .submenu-grid, .options-grid { grid-template-columns: repeat(3, 1fr); }
+
+    .item-card {
+        border: 1px solid var(--border-gray);
+        background: rgba(255,255,255,0.02);
+        cursor: pointer; transition: 0.3s;
+        text-align: center; padding: 40px 20px;
+    }
+
+    .item-card:hover { border-color: white; background: rgba(255,255,255,0.05); }
+    .item-card h3 { font-family: var(--font-header); font-size: 14px; letter-spacing: 3px; margin: 15px 0 5px 0; }
+    .item-card p { opacity: 0.5; font-size: 12px; margin: 0; }
+
+    .product-detail-layout {
+        display: grid; grid-template-columns: 1fr 1fr; gap: 60px;
+        background: rgba(10, 10, 10, 0.5); padding: 40px; border: 1px solid var(--border-gray);
+    }
+
+    .product-image-box {
+        aspect-ratio: 1/1.2; background: rgba(255,255,255,0.03);
+        display: flex; align-items: center; justify-content: center; border: 1px solid #111;
+    }
+
+    .option-label { font-size: 10px; letter-spacing: 2px; color: #666; margin-bottom: 10px; display: block; }
+    
+    .pill-container { display: flex; gap: 10px; margin-bottom: 30px; }
+    
+    .pill {
+        padding: 10px 20px; border: 1px solid #333; font-size: 12px;
+        cursor: pointer; transition: 0.2s;
+    }
+    .pill.active { border-color: white; background: white; color: black; }
+
+    .primary-btn {
+        width: 100%; padding: 20px; background: white; color: black;
+        font-family: var(--font-header); font-weight: 900; border: none;
+        cursor: pointer; text-transform: uppercase; letter-spacing: 4px;
+    }
+
+    .back-btn { cursor: pointer; color: #555; font-size: 10px; margin-bottom: 30px; display: inline-block; }
+
+    .checkout-form { background: rgba(10, 10, 10, 0.8); padding: 40px; border: 1px solid var(--border-gray); }
+    
+    .form-section-title { font-family: var(--font-header); font-size: 12px; letter-spacing: 3px; margin: 20px 0 15px 0; border-bottom: 1px solid #222; padding-bottom: 10px; }
+
+    input { 
+        background: transparent; border: 1px solid #333; color: white; 
+        padding: 15px; width: 100%; margin-bottom: 15px; box-sizing: border-box; 
+        font-family: var(--font-main); outline: none;
+    }
+    input:focus { border-color: white; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+
+    @media (max-width: 768px) {
+        .product-detail-layout, .submenu-grid, .box-grid, .options-grid { grid-template-columns: 1fr; }
+        .form-row { grid-template-columns: 1fr; }
+    }
+</style>
+
+<div id="star-container"></div>
+
+<header>
+    <div class="header-content">
+        <div style="width: 40px;"></div>
+        <h1 class="logo" onclick="showView('homeView')">GINZA WRLD</h1>
+        <div onclick="showView('cartView')" style="cursor:pointer; position:relative;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            <div id="cartCount" style="position:absolute; top:-8px; right:-8px; background:white; color:black; font-size:10px; width:16px; height:16px; display:flex; align-items:center; justify-content:center; font-weight:bold;">0</div>
+        </div>
+    </div>
+</header>
+
+<main>
+    <div id="homeView" class="view-container">
+        <div class="box-grid">
+            <div class="item-card" onclick="showSubMenu('pants')">PANTS</div>
+            <div class="item-card" onclick="showCategory('Sweaters')">SWEATERS</div>
+            <div class="item-card" onclick="showSubMenu('shorts')">SHORTS</div>
+            <div class="item-card" onclick="showCategory('Track Suits')">TRACK SUITS</div>
+            <div class="item-card" style="grid-column: 1 / -1; border-color: #ff00ff;" onclick="showWomensDept()">WOMENS DEPT</div>
+        </div>
+    </div>
+
+    <div id="categoryView" class="view-container">
+        <div class="back-btn" onclick="showView('homeView')">← BACK</div>
+        <h2 id="catTitle" style="font-family: var(--font-header); letter-spacing: 5px; margin-bottom: 40px;"></h2>
+        <div class="options-grid" id="optionsGrid"></div>
+    </div>
+
+    <div id="productDetailView" class="view-container">
+        <div class="back-btn" onclick="showView('categoryView')">← BACK TO COLLECTION</div>
+        <div class="product-detail-layout">
+            <div class="product-image-box">
+                <span style="font-size:10px; color:#222; letter-spacing:5px;">IMAGE_ASSET</span>
+            </div>
+            <div>
+                <h2 id="detailName" style="font-family: var(--font-header); letter-spacing: 4px; margin-bottom: 10px;"></h2>
+                <p id="detailPrice" style="font-size: 20px; margin-bottom: 40px;"></p>
+                
+                <span class="option-label">SELECT COLOR</span>
+                <div class="pill-container">
+                    <div class="pill active" onclick="selectPill(this)">ONYX</div>
+                    <div class="pill" onclick="selectPill(this)">CHROME</div>
+                </div>
+
+                <span class="option-label">SELECT SIZE</span>
+                <div class="pill-container">
+                    <div class="pill" onclick="selectPill(this)">S</div>
+                    <div class="pill active" onclick="selectPill(this)">M</div>
+                    <div class="pill" onclick="selectPill(this)">L</div>
+                    <div class="pill" onclick="selectPill(this)">XL</div>
+                </div>
+
+                <button class="primary-btn" onclick="addToBag()">ADD TO BAG</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="cartView" class="view-container" style="max-width: 600px;">
+        <div class="back-btn" onclick="showView('homeView')">← CONTINUE SHOPPING</div>
+        <h2 style="font-family: var(--font-header); letter-spacing: 5px;">BAG</h2>
+        <div id="cartList" style="margin-bottom:30px;"></div>
+        <div id="cartTotal" style="text-align:right; font-family: var(--font-header); font-size:20px; margin-bottom:30px;"></div>
+        <button class="primary-btn" onclick="showView('checkoutView')">PROCEED TO CHECKOUT</button>
+    </div>
+
+    <div id="checkoutView" class="view-container" style="max-width: 600px;">
+        <div class="back-btn" onclick="showView('cartView')">← BACK TO BAG</div>
+        <h2 style="font-family: var(--font-header); letter-spacing: 5px;">CHECKOUT</h2>
+        <div class="checkout-form">
+            <div class="form-section-title">SHIPPING DETAILS</div>
+            <input type="text" placeholder="FULL NAME">
+            <input type="text" placeholder="SHIPPING ADDRESS">
+            <div class="form-row">
+                <input type="text" placeholder="CITY">
+                <input type="text" placeholder="ZIP CODE">
+            </div>
+
+            <div class="form-section-title">PAYMENT INFORMATION</div>
+            <input type="text" placeholder="CARD NUMBER (16 DIGITS)">
+            <div class="form-row">
+                <input type="text" placeholder="EXPIRATION DATE (MM/YY)">
+                <input type="text" placeholder="CCV">
+            </div>
+            
+            <button class="primary-btn" style="margin-top: 20px;" onclick="processOrder()">PLACE ORDER & PAY</button>
+        </div>
+    </div>
+</main>
+
+<script>
+    let cart = [];
+    let currentProduct = {};
+
+    const starContainer = document.getElementById('star-container');
+    for (let i = 0; i < 350; i++) {
+        const star = document.createElement('div');
+        star.className = 'star';
+        const size = Math.random() * 2 + 'px';
+        star.style.width = size; star.style.height = size;
+        star.style.left = Math.random() * 100 + '%';
+        star.style.top = Math.random() * 100 + '%';
+        star.style.setProperty('--duration', (Math.random() * 4 + 3) + 's');
+        starContainer.appendChild(star);
+    }
+
+    function showView(viewId) {
+        document.querySelectorAll('.view-container').forEach(v => v.style.display = 'none');
+        document.getElementById(viewId).style.display = 'block';
+        window.scrollTo(0,0);
+        if(viewId === 'cartView') updateCartDisplay();
+    }
+
+    function showCategory(name) {
+        showView('categoryView');
+        document.getElementById('catTitle').innerText = name.toUpperCase();
+        const grid = document.getElementById('optionsGrid');
+        grid.innerHTML = '';
+        const price = name.includes('Sweaters') ? 75 : (name.includes('Track Suits') ? 85 : 65);
+        
+        for(let i = 1; i <= 9; i++) {
+            const itemName = `GINZA V${i}`;
+            const card = document.createElement('div');
+            card.className = 'item-card';
+            card.innerHTML = `
+                <div style="height:150px; background:rgba(255,255,255,0.02); display:flex; align-items:center; justify-content:center; color:#111; font-size:8px;">ASSET</div>
+                <h3>${itemName}</h3>
+                <p>$${price}.00</p>
+            `;
+            card.onclick = () => openProduct(itemName, price);
+            grid.appendChild(card);
+        }
+    }
+
+    function openProduct(name, price) {
+        currentProduct = { name, price };
+        document.getElementById('detailName').innerText = name;
+        document.getElementById('detailPrice').innerText = `$${price}.00`;
+        showView('productDetailView');
+    }
+
+    function selectPill(el) {
+        el.parentElement.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+        el.classList.add('active');
+    }
+
+    function addToBag() {
+        cart.push({...currentProduct});
+        document.getElementById('cartCount').innerText = cart.length;
+        alert(currentProduct.name + " added to bag");
+        showView('homeView');
+    }
+
+    function updateCartDisplay() {
+        const list = document.getElementById('cartList');
+        list.innerHTML = '';
+        let total = 0;
+        cart.forEach(item => {
+            total += item.price;
+            list.innerHTML += `<div style="display:flex; justify-content:space-between; padding:15px 0; border-bottom:1px solid #111;">
+                <span>${item.name}</span><span>$${item.price}.00</span>
+            </div>`;
+        });
+        document.getElementById('cartTotal').innerText = `TOTAL: $${total}.00`;
+    }
+
+    function processOrder() {
+        alert("PAYMENT PROCESSED SUCCESSFULLY. THANK YOU FOR SHOPPING AT GINZA WRLD.");
+        cart = [];
+        document.getElementById('cartCount').innerText = '0';
+        showView('homeView');
+    }
+
+    function showSubMenu(type) { showCategory(type); }
+    function showWomensDept() { showCategory('Womens'); }
+</script>
+
+</body>
+</html>
